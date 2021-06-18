@@ -1,0 +1,2004 @@
+---
+swagger: "2.0"
+info:
+  description: "Corrección del Bug del manejo de T.O. y Connection Error."
+  version: "2.2.7"
+  title: " Product Configuration  Management"
+  x-ibm-name: "-product-configuration-management"
+host: "apis.telefonica.com"
+basePath: "/ri/productConfiguration/v2"
+tags:
+- name: "product configurations"
+schemes:
+- "https"
+paths:
+  /productConfiguration:
+    post:
+      tags:
+      - "product configurations"
+      summary: "Retrieve list of Configurations products"
+      operationId: "retrieveProductConfiguration"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "UNICA-Application"
+        in: "header"
+        description: "Identifier for the system originating the request"
+        required: false
+        type: "string"
+      - name: "UNICA-User"
+        in: "header"
+        description: "Identifies the user when the request is received from a trusted\
+          \ application and no end user authorization token is used but just an application\
+          \ token"
+        required: false
+        type: "string"
+      - name: "UNICA-PID"
+        in: "header"
+        description: "Unique identifier for the process or execution flow"
+        required: false
+        type: "string"
+      - name: "UNICA-ServiceId"
+        in: "header"
+        description: "If this API is used via a platform acting as a common entry\
+          \ point to different OBs, this identifier is used to route the request to\
+          \ the corresponding OB environment"
+        required: false
+        type: "string"
+      - name: "Authorization"
+        in: "header"
+        description: "Including the proof of access (using OAuth2.0 security model)\
+          \ to guarantee that the consumer has privileges to access the entity database"
+        required: false
+        type: "string"
+      - in: "body"
+        name: "ProductConfigurationRequest"
+        description: "The information required to create a product instance"
+        required: true
+        schema:
+          $ref: "#/definitions/ProductConfigurationRequestType"
+      responses:
+        201:
+          headers:
+            UNICA-ServiceId":
+              description: "If this API is used via a platform acting as a common\
+                \ entry point to different OBs, this identifier is used to route the\
+                \ request to the corresponding OB environment"
+              type: "string"
+            UNICA-PID:
+              description: "Unique identifier for the process or execution flow"
+              type: "string"
+          description: "List of configuration product  provided"
+          schema:
+            $ref: "#/definitions/ProductConfigurationResponseType"
+        400:
+          headers:
+            UNICA-ServiceId":
+              description: "If this API is used via a platform acting as a common\
+                \ entry point to different OBs, this identifier is used to route the\
+                \ request to the corresponding OB environment"
+              type: "string"
+            UNICA-PID:
+              description: "Unique identifier for the process or execution flow"
+              type: "string"
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/ExceptionType"
+        404:
+          headers:
+            UNICA-ServiceId":
+              description: "If this API is used via a platform acting as a common\
+                \ entry point to different OBs, this identifier is used to route the\
+                \ request to the corresponding OB environment"
+              type: "string"
+            UNICA-PID:
+              description: "Unique identifier for the process or execution flow"
+              type: "string"
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/ExceptionType"
+        500:
+          headers:
+            UNICA-ServiceId":
+              description: "If this API is used via a platform acting as a common\
+                \ entry point to different OBs, this identifier is used to route the\
+                \ request to the corresponding OB environment"
+              type: "string"
+            UNICA-PID:
+              description: "Unique identifier for the process or execution flow"
+              type: "string"
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/ExceptionType"
+definitions:
+  ExceptionType:
+    required:
+    - "exceptionId"
+    - "exceptionText"
+    properties:
+      exceptionId:
+        type: "string"
+      exceptionText:
+        type: "string"
+      moreInfo:
+        type: "string"
+      userMessage:
+        type: "string"
+    description: "UNICA error response"
+  ProductConfigurationRequestType:
+    required:
+    - "psCode"
+    - "externalId"
+    - "salesChannel"
+    - "stateOrProvince"
+    - "nationalID"
+    - "nationalIDType"
+    - "neighborhood"
+    - "productType"
+    - "targetInternetTechnology"
+    - "commercialOperation"
+    properties:
+      externalId:
+        type: "string"
+        description: "Id generado por el consumidor"
+      salesChannel:
+        type: "string"
+        description: "String providing identification of the related object reported\
+          \ (an id or a name)"
+      commercialOperation:
+        type: "string"
+        description: "Operación comercial en la cartilla"
+      productType:
+        type: "string"
+        description: "Tipo de producto standAlone, MT"
+      psCode:
+        type: "string"
+        description: "PS del producto a buscar en la cartilla"
+      segment:
+        type: "string"
+        description: "Tipo cliente ,R = Residencial, C= corporativo , si no se envia\
+          \ se busca para todos los segmentos"
+      nationalIDType:
+        type: "string"
+        description: "Tipo de documento"
+      nationalID:
+        type: "string"
+        description: "Numero de documento de producto"
+      areaCode:
+        type: "string"
+        description: "Ubigeo"
+      stateOrProvince:
+        type: "string"
+        description: "Nombre de la provincia"
+      neighborhood:
+        type: "string"
+        description: "Nombre de la distrito"
+      targetInternetTechnology:
+        type: "string"
+        description: "Tecnologia a donde se realizara la migracion (tener en cueta\
+          \ que eso es lo que retorna motor , caculadora o FFTT , HFC,FTTH,ADSL,NO\
+          \ APLICA"
+      campaign:
+        type: "string"
+        description: "Nombre de la campaña de la configuración buscada"
+      productInstance:
+        type: "array"
+        items:
+          $ref: "#/definitions/ProductInstanceType"
+      additionalData:
+        type: "array"
+        description: "Any further information needed by the server to fill the product\
+          \ definition (implementation and application specific) in the form of name-value\
+          \ pairs. It is recommended not to use this parameter and request new information\
+          \ elements to be added in the structure definition. Next releases of the\
+          \ T-Open API will not include support for this additionalData parameter\
+          \ because it has been detected that the extensibility function is not helping\
+          \ the stability of the standard definition of APIs"
+        items:
+          $ref: "#/definitions/KeyValueType"
+  ProductConfigurationResponseType:
+    properties:
+      configurations:
+        type: "array"
+        items:
+          $ref: "#/definitions/configurationType"
+      filter:
+        description: "Flitros de busqueda con los que se en econtro registros en la\
+          \ cartilla"
+        $ref: "#/definitions/filterType"
+  configurationType:
+    required:
+    - "id"
+    properties:
+      id:
+        type: "string"
+        description: "Codigo de la cartilla (antes response Menssage)"
+      additionalData:
+        type: "array"
+        description: "Any further information needed by the server to fill the product\
+          \ definition (implementation and application specific) in the form of name-value\
+          \ pairs. It is recommended not to use this parameter and request new information\
+          \ elements to be added in the structure definition. Next releases of the\
+          \ T-Open API will not include support for this additionalData parameter\
+          \ because it has been detected that the extensibility function is not helping\
+          \ the stability of the standard definition of APIs"
+        items:
+          $ref: "#/definitions/KeyValueType"
+  filterType:
+    properties:
+      salesChannel:
+        type: "string"
+        description: "String providing identification of the related object reported\
+          \ (an id or a name)"
+      commercialOperation:
+        type: "string"
+        description: "Operación comercial en la cartilla"
+      productType:
+        type: "string"
+        description: "Tipo de producto standAlone, MT"
+      psCode:
+        type: "string"
+        description: "PS del producto a buscar en la cartilla"
+      segment:
+        type: "string"
+        description: "Tipo cliente ,R = Residencial, C= corporativo , si no se envia\
+          \ se busca para todos los segmentos"
+      stateOrProvince:
+        type: "string"
+        description: "Nombre de la provincia"
+      neighborhood:
+        type: "string"
+        description: "Nombre de la distrito"
+      sourceInternetTechnology:
+        type: "string"
+        description: "Tecnologia origen de la migracion (tener en cueta que eso es\
+          \ lo que retorna motor , caculadora o FFTT , HFC,FTTH,ADSL,NO APLICA"
+      targetInternetTechnology:
+        type: "string"
+        description: "Tecnologia a donde se realizara la migracion (tener en cueta\
+          \ que eso es lo que retorna motor , caculadora o FFTT , HFC,FTTH,ADSL,NO\
+          \ APLICA"
+      sourceModemType:
+        type: "array"
+        items:
+          type: "string"
+        description: "Tipo de moden origen "
+      targetModemType:
+        type: "array"
+        items:
+          type: "string"
+        description: "tipo del modem destino "
+      sourceTvType:
+        type: "string"
+        description: "Tecnologia origen de la television "
+      targetTvType:
+        type: "string"
+        description: "Tecnologia origen de la television  "
+      sourceDecoType:
+        type: "array"
+        items:
+          type: "string"
+        description: "Tecnologia origen del deco "
+      sourceMethodDecoType:
+        type: "array"
+        items:
+          type: "string"
+        description: "Metodo origen del deco "
+      amountDecoType:
+        type: "string"
+        description: "numero de decos "
+      equipmentRepetidor:
+        type: "array"
+        items:
+          type: "string"
+        description: "equipamiento para repetidor "
+      equipmentLinea:
+        type: "boolean"
+        description: "equipamiento de linea "
+  ProductInstanceRequestType:
+    required:
+    - "name"
+    - "relatedParty"
+    properties:
+      description:
+        type: "string"
+        description: "Some text providing a user-friendly detailed description of\
+          \ the product instance"
+      name:
+        type: "string"
+        description: "A human readable product name"
+      productType:
+        type: "string"
+        description: "Indication of the type of product instance registered. Supported\
+          \ values are implementation and application specific"
+        enum:
+        - "mobile"
+        - "landline"
+        - "ipTv"
+        - "cableTv"
+        - "email"
+        - "broadband"
+        - "bundle"
+        - "sva"
+        - "sim"
+        - "device"
+        - "bolton"
+        - "dth"
+        - "international"
+        - "plan"
+      category:
+        type: "array"
+        description: "List of categories/subcategories allocated to the ticket, intended\
+          \ to allow segmentation. A product may belong to more than one category"
+        items:
+          $ref: "#/definitions/CategoryTreeType"
+      isBundle:
+        type: "boolean"
+        description: "Indicates if the product is a single entity (false) or if it\
+          \ is actually composed of subproducts itself (true)."
+      isCustomerVisible:
+        type: "boolean"
+        description: "Indicates if the product is the product is visible by the customer\
+          \ (true) or not (false)"
+      productSerialNumber:
+        type: "string"
+        description: "Any commercial code string that can be used for internal accounting\
+          \ to uniquely identify the product. It is the serial number for the product.\
+          \ This is typically applicable to tangible products."
+      startDate:
+        type: "string"
+        format: "date-time"
+        description: "The date from which the product must start providing service"
+      terminationDate:
+        type: "string"
+        format: "date-time"
+        description: "The date when the product will stop providing service"
+      status:
+        type: "string"
+        description: "The status to which the product has to be set"
+        enum:
+        - "new"
+        - "created"
+        - "active"
+        - "pending"
+        - "aborted"
+        - "suspended"
+        - "cancelled"
+        - "cancelling"
+        - "terminated"
+        - "terminating"
+        - "information"
+        - "trial"
+        - "keep"
+      subStatus:
+        type: "string"
+        description: "Substatus in order to define a second status level"
+      billingAccount:
+        type: "array"
+        description: "Reference to the billing accounts that are associated to the\
+          \ product instance. This attribute is an array to allow scenarios where\
+          \ a product or service is shared for payment between different accounts"
+        items:
+          $ref: "#/definitions/AccountRefType"
+      productOffering:
+        description: "Reference to the Offering Identifier within the product catalogue\
+          \ that includes the description of the product that has been created for\
+          \ the customer"
+        $ref: "#/definitions/EntityRefType"
+      productSpec:
+        description: "Reference to the Product specification in the product catalogue\
+          \ that provides the description of the characteristics that define the configuration\
+          \ of the product instance"
+        $ref: "#/definitions/EntityRefType"
+      agreement:
+        type: "array"
+        description: "A list of agreement references. An agreement represents a contract\
+          \ or arrangement, either written or verbal and sometimes enforceable by\
+          \ law, such as a service level agreement or a customer price agreement"
+        items:
+          $ref: "#/definitions/EntityRefType"
+      characteristic:
+        type: "array"
+        description: "List of configurable characteristics of the product to instantiate\
+          \ or to modify"
+        items:
+          $ref: "#/definitions/ProductCharacteristicType"
+      productRelationship:
+        type: "array"
+        description: "Used to define subproducts composing a bundled product or products\
+          \ already owned by the customer but with a relationship with the one instantiated\
+          \ in the inventory"
+        items:
+          $ref: "#/definitions/RelatedProductType"
+      productPrice:
+        type: "array"
+        description: "List of price models applied to the instantiated product"
+        items:
+          $ref: "#/definitions/ComponentProdPriceType"
+      paymentMean:
+        description: "Reference to the type of payment mode to be used for the product\
+          \ or service"
+        $ref: "#/definitions/EntityRefType"
+      place:
+        type: "array"
+        description: "Used to define a place useful for the product (for example an\
+          \ installation site)"
+        items:
+          $ref: "#/definitions/EntityRefType"
+      relatedParty:
+        type: "array"
+        description: "List of individuals (e.g.: support agent, system impacted, reviewer,\
+          \ ?) associated to the order"
+        items:
+          $ref: "#/definitions/RelatedPartyRefType"
+        minItems: 0
+      relatedObject:
+        type: "array"
+        description: "List of Objects or resources associated to an order (e.g.: framework\
+          \ agreement, opportunity, ?"
+        items:
+          $ref: "#/definitions/RelatedObjectType"
+      additionalData:
+        type: "array"
+        description: "Any further information needed by the server to fill the product\
+          \ definition (implementation and application specific) in the form of name-value\
+          \ pairs. It is recommended not to use this parameter and request new information\
+          \ elements to be added in the structure definition. Next releases of the\
+          \ T-Open API will not include support for this additionalData parameter\
+          \ because it has been detected that the extensibility function is not helping\
+          \ the stability of the standard definition of APIs"
+        items:
+          $ref: "#/definitions/KeyValueType"
+      callbackUrl:
+        type: "string"
+        description: "An URL that will allow the server to report asynchronously any\
+          \ further modification defined by the server on any of the parameters defining\
+          \ a product previously created. It should be ignored if a provisioned callbackUrl\
+          \ exists (how this callbackUrl has been provisioned is beyond the scope\
+          \ of this specification)."
+  ProductInstanceType:
+    required:
+    - "href"
+    - "id"
+    - "name"
+    - "relatedParty"
+    properties:
+      id:
+        type: "string"
+        description: "Unique Identifier within the server for the product instance\
+          \ reported"
+      href:
+        type: "string"
+        description: "A resource URI pointing to the resource in the OB that stores\
+          \ the product instance detailed information (e.g.: productInventory/v1/products/{productId})"
+      publicId:
+        type: "string"
+        description: "Public number associated to the product (e.g.: use of an msisdn\
+          \ to refer to a subscription to a mobileline product)"
+      description:
+        type: "string"
+        description: "Some text providing a user-friendly detailed description of\
+          \ the product instance"
+      name:
+        type: "string"
+        description: "A human readable product name"
+      productType:
+        type: "string"
+        description: "Indication of the type of product instance registered. Supported\
+          \ values are implementation and application specific"
+        enum:
+        - "mobile"
+        - "landline"
+        - "ipTv"
+        - "cableTv"
+        - "email"
+        - "broadband"
+        - "bundle"
+        - "sva"
+        - "sim"
+        - "device"
+        - "bolton"
+        - "dth"
+        - "international"
+        - "plan"
+      tags:
+        type: "array"
+        description: "ist of freely defined strings that tag the product based on\
+          \ some criteria. This can be used by consumer application to define presentation\
+          \ logic"
+        items:
+          type: "string"
+      category:
+        type: "array"
+        description: "List of categories/subcategories allocated to the ticket, intended\
+          \ to allow segmentation. A product may belong to more than one category"
+        items:
+          $ref: "#/definitions/CategoryTreeType"
+      isBundle:
+        type: "boolean"
+        description: "Indicates if the product is a single entity (false) or if it\
+          \ is actually composed of subproducts itself (true)"
+      isCustomerVisible:
+        type: "boolean"
+        description: "Indicates if the product is the product is visible by the customer\
+          \ (true) or not (false)"
+      productSerialNumber:
+        type: "string"
+        description: "Any commercial code string that can be used for internal accounting\
+          \ to uniquely identify the product. It is the serial number for the product.\
+          \ This is typically applicable to tangible products"
+      orderDate:
+        type: "string"
+        format: "date-time"
+        description: "The date when the product was created, when the order that triggered\
+          \ the product creation was registered"
+      creatingOrder:
+        description: "Reference to the order which created the product instance in\
+          \ the server"
+        $ref: "#/definitions/EntityRefType"
+      modifyingOrders:
+        type: "array"
+        description: "Reference to the orders that modified the product instance in\
+          \ the server"
+        items:
+          $ref: "#/definitions/EntityRefType"
+      startDate:
+        type: "string"
+        format: "date-time"
+        description: "The date from which the product must start providing service"
+      terminationDate:
+        type: "string"
+        format: "date-time"
+        description: "The date when the product will stop providing service"
+      status:
+        type: "string"
+        description: "The status to which the product is set"
+        enum:
+        - "new"
+        - "created"
+        - "active"
+        - "pending"
+        - "aborted"
+        - "suspended"
+        - "cancelled"
+        - "cancelling"
+        - "terminated"
+        - "terminating"
+        - "information"
+        - "trial"
+        - "keep"
+      subStatus:
+        type: "string"
+        description: "Substatus in order to define a second status level"
+      billingAccount:
+        type: "array"
+        description: "Reference to the billing accounts that are associated to the\
+          \ product instance. This attribute is an array to allow scenarios where\
+          \ a product or service is shared for payment between different accounts"
+        items:
+          $ref: "#/definitions/AccountRefType"
+      productOffering:
+        description: "Reference to the Offering Identifier within the product catalogue\
+          \ that includes the description of the product that has been created for\
+          \ the customer"
+        $ref: "#/definitions/EntityRefType"
+      productSpec:
+        description: "Reference to the Product specification in the product catalogue\
+          \ that provides the description of the characteristics that define the configuration\
+          \ of the product instance"
+        $ref: "#/definitions/EntityRefType"
+      agreement:
+        type: "array"
+        description: "A list of agreement references. An agreement represents a contract\
+          \ or arrangement, either written or verbal and sometimes enforceable by\
+          \ law, such as a service level agreement or a customer price agreement"
+        items:
+          $ref: "#/definitions/EntityRefType"
+      characteristic:
+        type: "array"
+        description: "List of configurable characteristics of the product to instantiate\
+          \ or to modify"
+        items:
+          $ref: "#/definitions/ProductCharacteristicType"
+      realizingResource:
+        type: "array"
+        description: "Reference to the resources that are created/associated as part\
+          \ of the instantiation of the product"
+        items:
+          $ref: "#/definitions/EntityRefType"
+      productRelationship:
+        type: "array"
+        description: "Used to define subproducts composing a bundled product or products\
+          \ already owned by the customer but with a relationship with the one instantiated\
+          \ in the inventory"
+        items:
+          $ref: "#/definitions/RelatedProductType"
+      productPrice:
+        type: "array"
+        description: "List of price models applied to the instantiated product"
+        items:
+          $ref: "#/definitions/ComponentProdPriceType"
+      paymentMean:
+        description: "Reference to the type of payment mode to be used for the product\
+          \ or service"
+        $ref: "#/definitions/EntityRefType"
+      place:
+        type: "array"
+        description: "Used to define a place useful for the product (for example an\
+          \ installation site)"
+        items:
+          $ref: "#/definitions/EntityRefType"
+      relatedParty:
+        type: "array"
+        description: "List of individuals (e.g.: support agent, system impacted, reviewer,\
+          \ ?) associated to the order"
+        items:
+          $ref: "#/definitions/RelatedPartyRefType"
+        minItems: 0
+      relatedObject:
+        type: "array"
+        description: "List of Objects or resources associated to an order (e.g.: framework\
+          \ agreement, opportunity, ?)"
+        items:
+          $ref: "#/definitions/RelatedObjectType"
+      additionalData:
+        type: "array"
+        description: "Any further information needed by the server to fill the product\
+          \ definition (implementation and application specific) in the form of name-value\
+          \ pairs. It is recommended not to use this parameter and request new information\
+          \ elements to be added in the structure definition. Next releases of the\
+          \ T-Open API will not include support for this additionalData parameter\
+          \ because it has been detected that the extensibility function is not helping\
+          \ the stability of the standard definition of APIs"
+        items:
+          $ref: "#/definitions/KeyValueType"
+  ProductInstanceStatusType:
+    required:
+    - "status"
+    properties:
+      status:
+        type: "string"
+        description: "Tracks the lifecycle status of the product in the internal state\
+          \ machine of the processing system"
+        enum:
+        - "new"
+        - "created"
+        - "active"
+        - "pending"
+        - "aborted"
+        - "suspended"
+        - "cancelled"
+        - "cancelling"
+        - "terminated"
+        - "terminating"
+        - "information"
+        - "trial"
+        - "keep"
+      subStatus:
+        type: "string"
+        description: "Substatus in order to define a second status level"
+      statusChanges:
+        type: "array"
+        description: "List of status/substatus changes for the entity"
+        items:
+          $ref: "#/definitions/ProductStatusChangeType"
+      additionalData:
+        type: "array"
+        description: "Any further information needed by the server to fill the entity\
+          \ status info. It could be used to provide specific identification of the\
+          \ entity whose status has changed (e.g.: type of entity and id of entity).It\
+          \ is recommended not to use this parameter and request new information elements\
+          \ to be added in the structure definition. Next releases of the T-Open API\
+          \ will not include support for this additionalData parameter because it\
+          \ has been detected that the extensibility function is not helping the stability\
+          \ of the standard definition of APIs"
+        items:
+          $ref: "#/definitions/KeyValueType"
+  ProductInstanceStatusRequestType:
+    required:
+    - "status"
+    properties:
+      status:
+        type: "string"
+        description: "Tracks the lifecycle status of the product in the internal state\
+          \ machine of the processing system"
+        enum:
+        - "new"
+        - "created"
+        - "active"
+        - "pending"
+        - "aborted"
+        - "suspended"
+        - "cancelled"
+        - "cancelling"
+        - "terminated"
+        - "terminating"
+        - "information"
+        - "trial"
+        - "keep"
+      subStatus:
+        type: "string"
+        description: "Substatus in order to define a second status level"
+      changeReason:
+        type: "string"
+        description: "Reasoning for the change of status or substatus"
+  ProductStatusChangeType:
+    required:
+    - "changeDate"
+    - "newStatus"
+    - "oldStatus"
+    properties:
+      changeDate:
+        type: "string"
+        format: "date-time"
+        description: "Date registered for the reported change of status or substatus"
+      oldStatus:
+        type: "string"
+        description: "Entity status before the change"
+        enum:
+        - "new"
+        - "created"
+        - "active"
+        - "pending"
+        - "aborted"
+        - "suspended"
+        - "cancelled"
+        - "cancelling"
+        - "terminated"
+        - "terminating"
+        - "information"
+        - "trial"
+        - "keep"
+      oldSubStatus:
+        type: "string"
+        description: "Substatus before the change"
+      newStatus:
+        type: "string"
+        description: "Entity status after the change"
+        enum:
+        - "new"
+        - "created"
+        - "active"
+        - "pending"
+        - "aborted"
+        - "suspended"
+        - "cancelled"
+        - "cancelling"
+        - "terminated"
+        - "terminating"
+        - "information"
+        - "trial"
+        - "keep"
+      newSubStatus:
+        type: "string"
+        description: "Substatus after the change"
+      changeReason:
+        type: "string"
+        description: "Reasoning for the change of status or substatus"
+  EntityRefType:
+    required:
+    - "id"
+    properties:
+      id:
+        type: "string"
+        description: "String providing identification of the related entity reported"
+      href:
+        type: "string"
+        description: "A resource URI pointing to the resource in the OB that stores\
+          \ the related entity detailed information"
+      name:
+        type: "string"
+        description: "String providing the name of the related entity reported"
+      role:
+        type: "string"
+        description: "Indication of the relationship defined between the entity and\
+          \ the order (e.g.: originator, customer, user, ?). Supported values are\
+          \ implementation and application specific"
+      coordinates:
+        type: "string"
+        description: "Aquí vendra las coordenadas de la dirección"
+      validFor:
+        description: "The validity for the relation with the related entity. If not\
+          \ included, the current date is used as starting date and no ending date\
+          \ is defined"
+        $ref: "#/definitions/TimePeriodType"
+      entityType:
+        type: "string"
+        description: "Identifier of the type of entity that is referenced (party,\
+          \ address, location, site, channel, product spec, product offering, account,\
+          \ customer, payment, payment method ...)"
+      '@referredType':
+        type: "string"
+        description: "Indicates the type of the resource referenced for extensibility/polimorphic\
+          \ purposes of the specific entity (individual/organization for customer,\
+          \ urban/rural for address, ...)"
+      description:
+        type: "string"
+        description: "Text describing the referred entity"
+  RelatedPartyRefType:
+    required:
+    - "id"
+    properties:
+      id:
+        type: "string"
+        description: "String providing identification of the related party reported"
+      href:
+        type: "string"
+        description: "A resource URI pointing to the resource in the OB that stores\
+          \ the related party detailed information"
+      name:
+        type: "string"
+        description: "String providing the name of the related party reported"
+      role:
+        type: "string"
+        description: "Indication of the relationship defined between the related party\
+          \ and the order (e.g.: originator, customer, user, ?). Supported values\
+          \ are implementation and application specific"
+      validFor:
+        description: "The validity for the relation with the related party. If not\
+          \ included, the current date is used as starting date and no ending date\
+          \ is defined"
+        $ref: "#/definitions/TimePeriodType"
+      '@referredType':
+        type: "string"
+        description: "Indicates the type of the resource referenced for extensibility/polimorphic\
+          \ purposes of the specific entity (individual/organization for customer,\
+          \ urban/rural for address, ...)"
+      description:
+        type: "string"
+        description: "Text describing the referred related party"
+  AccountRefType:
+    required:
+    - "href"
+    - "id"
+    properties:
+      id:
+        type: "string"
+        description: "Unique identifier of the account"
+      href:
+        type: "string"
+        description: "A resource URI pointing to the account resource in the server"
+      name:
+        type: "string"
+        description: "Account name"
+      '@referredType':
+        type: "string"
+        description: "Type of referred account e.g.: financial account, billing account?"
+      billingMethod:
+        type: "string"
+        description: "How this account is billed"
+        enum:
+        - "prepaid"
+        - "postpaid"
+        - "control"
+    description: "Reference to an external account that can be queried with the Account\
+      \ Management API."
+  RelatedObjectType:
+    required:
+    - "href"
+    properties:
+      involvement:
+        type: "string"
+        description: "Indication of the relationship defined between the object and\
+          \ the product reported (e.g.: disputed invoice, adjusted invoice, related\
+          \ product, opportunity, framework agreeement,?). Supported values are implementation\
+          \ and application specific"
+      reference:
+        type: "string"
+        description: "String providing identification of the related object reported\
+          \ (an id or a name)"
+      href:
+        type: "string"
+        description: "A resource URI pointing to the resource in the OB that stores\
+          \ the related object detailed information"
+      validFor:
+        description: "The validity for the relation with the related object. If not\
+          \ included, the current date is used as starting date and no ending date\
+          \ is defined"
+        $ref: "#/definitions/TimePeriodType"
+  ProductCharacteristicType:
+    type: "object"
+    required:
+    - "@type"
+    discriminator: "@type"
+    properties:
+      valueType:
+        type: "string"
+        description: "type of characteristic information element, defines the format\
+          \ structure of the value information element (string or object type)"
+        enum:
+        - "String"
+        - "Object"
+      '@type':
+        type: "string"
+        description: "type of characteristic information element, defines the format\
+          \ structure of the value information element (string or specific object\
+          \ type)"
+        enum:
+        - "StringType"
+        - "Text"
+        - "MobileQuota"
+        - "InternetConnection"
+        - "TvPackages"
+      name:
+        type: "string"
+        description: "Name of the product string characteristic"
+      value:
+        type: "object"
+        description: "the value that the characteristic can take on as string"
+  StringType:
+    allOf:
+    - $ref: "#/definitions/ProductCharacteristicType"
+    - type: "object"
+      required:
+      - "name"
+      - "value"
+      properties:
+        name:
+          type: "string"
+          description: "Name of the product string characteristic"
+        value:
+          type: "string"
+          description: "the value that the characteristic can take on as string"
+  Text:
+    allOf:
+    - $ref: "#/definitions/ProductCharacteristicType"
+    - type: "object"
+      required:
+      - "name"
+      - "value"
+      properties:
+        name:
+          type: "string"
+          description: "First part of the textual descriptive characteristic"
+        value:
+          type: "string"
+          description: "Second part of the textual descriptive characteristic"
+  MobileQuota:
+    allOf:
+    - $ref: "#/definitions/ProductCharacteristicType"
+    - type: "object"
+      required:
+      - "value"
+      properties:
+        value:
+          description: "Object including the characteristic information"
+          $ref: "#/definitions/MobileQuotaCharacteristicType"
+        '@schemaLocation':
+          type: "string"
+          description: "This field provides a link to the schema describing the resource\
+            \ model for the Object defining the characteristics for an internet product"
+  InternetConnection:
+    allOf:
+    - $ref: "#/definitions/ProductCharacteristicType"
+    - type: "object"
+      required:
+      - "value"
+      properties:
+        value:
+          description: "Object including the characteristic information"
+          $ref: "#/definitions/InternetConnectionCharacteristicType"
+        '@schemaLocation':
+          type: "string"
+          description: "This field provides a link to the schema describing the resource\
+            \ model for the Object defining the characteristics for an internet product"
+  TvPackages:
+    allOf:
+    - $ref: "#/definitions/ProductCharacteristicType"
+    - type: "object"
+      required:
+      - "value"
+      properties:
+        value:
+          description: "Object including the characteristic information"
+          $ref: "#/definitions/TvPackagesCharacteristicType"
+        '@schemaLocation':
+          type: "string"
+          description: "This field provides a link to the schema describing the resource\
+            \ model for the Object defining the characteristics for a TV product"
+  UsageCriteriaType:
+    type: "object"
+    properties:
+      origins:
+        type: "array"
+        description: "List of origins that are considered when registering usage of\
+          \ a given product/service by the consumption quota"
+        items:
+          type: "string"
+          enum:
+          - "home"
+          - "roaming"
+          - "EU"
+          - "any"
+          default: "home"
+      destinations:
+        type: "array"
+        description: "List of destinations that are considered when registering usage\
+          \ of a given product/service by the consumption quota"
+        items:
+          type: "string"
+          enum:
+          - "telefonica"
+          - "nontelefonica"
+          - "local"
+          - "regional"
+          - "national"
+          - "international"
+          - "mobile"
+          - "landline"
+          - "rural"
+          - "any"
+          default: "national"
+      timebands:
+        type: "array"
+        description: "List of time bands that are considered when registering usage\
+          \ of a given product/service by the consumption quota"
+        items:
+          type: "string"
+          enum:
+          - "day"
+          - "night"
+          - "morning"
+          - "evening"
+          - "weekends"
+          - "workdays"
+          - "all"
+          default: "all"
+    description: "Definition of usage criteria considered in the quota for consumption\
+      \ measurement (timebands, origins or destinations)."
+  InternetConnectionCharacteristicType:
+    type: "object"
+    required:
+    - "connection"
+    properties:
+      connection:
+        description: "Information for broadband/internet type products, providing\
+          \ details on connections characteristics"
+        $ref: "#/definitions/ConnectionType"
+  ConnectionType:
+    properties:
+      type:
+        type: "string"
+        description: "Data quota max number of bytes allowed. -1 means unlimited"
+        enum:
+        - "fiber"
+        - "dsl"
+        - "unknown"
+      ulDataRate:
+        type: "integer"
+        description: "Uplink speed in megabits per second"
+      dlDataRate:
+        type: "integer"
+        description: "Downlink speed in megabits per second"
+      unit:
+        type: "string"
+        description: "Code of the unit used to specify the data rate. If not included\
+          \ is MBs (default value)"
+        enum:
+        - "bps"
+        - "Kbps"
+        - "Mbps"
+        - "Gbps"
+        default: "Mbps"
+    description: "Information for broadband/internet type products, providing details\
+      \ on connections characteristics"
+  TvPackagesCharacteristicType:
+    type: "object"
+    required:
+    - "packages"
+    properties:
+      packages:
+        type: "array"
+        description: "List of subscribed available TV packages"
+        items:
+          $ref: "#/definitions/PackageType"
+  TvPackageType:
+    properties:
+      packages:
+        type: "array"
+        description: "List of subscribed available TV packages"
+        items:
+          $ref: "#/definitions/PackageType"
+    description: "Information for TV type products, providing details on available\
+      \ TV packages"
+  MobileQuotaCharacteristicType:
+    properties:
+      voiceQuota:
+        type: "array"
+        items:
+          $ref: "#/definitions/MobileQuotaCharacteristicType_voiceQuota"
+      dataQuota:
+        type: "array"
+        items:
+          $ref: "#/definitions/MobileQuotaCharacteristicType_dataQuota"
+      smsQuota:
+        type: "array"
+        items:
+          $ref: "#/definitions/MobileQuotaCharacteristicType_smsQuota"
+    description: "Information for mobile type products, providing details on available\
+      \ data, voice and sms quota"
+  PackageType:
+    properties:
+      name:
+        type: "string"
+        description: "Name of the package"
+      packageId:
+        type: "string"
+        description: "Unique package identifier"
+  RelatedProductType:
+    required:
+    - "product"
+    properties:
+      type:
+        type: "string"
+        description: "A categorization of the relationship defined between the product\
+          \ referenced and the original entity (e.g.: subproduct, bundled, dependent,?)"
+      product:
+        description: "Definition of the related product (e.g.: the bundled subproduct)"
+        $ref: "#/definitions/ProductRefInfoType"
+  ProductRefInfoType:
+    properties:
+      id:
+        type: "string"
+        description: "Unique Identifier within the server (product inventory) for\
+          \ the product instance that is associated to an account"
+      href:
+        type: "string"
+        description: "A resource URI pointing to the resource in the OB that stores\
+          \ the product instance detailed information (e.g.: /productinventory/v1/products/{productId})"
+      name:
+        type: "string"
+        description: "A human readable product name"
+      publicId:
+        type: "string"
+        description: "Public number associated to the product (e.g.: use of an msisdn\
+          \ to refer to a subscription to a mobileline product)"
+      description:
+        type: "string"
+        description: "Some text providing a user-friendly detailed description of\
+          \ the product instance"
+      productType:
+        type: "string"
+        description: "Indication of the type of product instance registered. Supported\
+          \ values are implementation and application specific"
+        enum:
+        - "mobile"
+        - "landline"
+        - "ipTv"
+        - "cableTv"
+        - "email"
+        - "broadband"
+        - "bundle"
+        - "sva"
+        - "sim"
+        - "device"
+        - "bolton"
+        - "dth"
+        - "international"
+        - "plan"
+      tags:
+        type: "array"
+        description: "ist of freely defined strings that tag the product based on\
+          \ some criteria. This can be used by consumer application to define presentation\
+          \ logic"
+        items:
+          type: "string"
+      category:
+        type: "array"
+        description: "A class defining the type of product instantiated (the category\
+          \ allocated to the product specification that defines the instantiated product).\
+          \ A product may belong to more than one class"
+        items:
+          $ref: "#/definitions/CategoryTreeType"
+      startDate:
+        type: "string"
+        format: "date-time"
+        description: "The date from which the product must start providing service"
+      terminationDate:
+        type: "string"
+        format: "date-time"
+        description: "The date when the product will stop providing service"
+      place:
+        type: "array"
+        description: "Used to define a place useful for the product (for example a\
+          \ delivery geographical place). It is an array because a given product could\
+          \ be delivered in different places, for instance if the quantity is more\
+          \ than 1, and/or it can be associated to different places, on for delivery\
+          \ and another one for installation"
+        items:
+          $ref: "#/definitions/EntityRefType"
+      productSpec:
+        description: "Reference to the Product specification in the product catalogue\
+          \ that provides the description of the characteristics that define the configuration\
+          \ of a product associated to an account"
+        $ref: "#/definitions/EntityRefType"
+      characteristic:
+        type: "array"
+        description: "List of specific product parameters configured for the product\
+          \ instance associated to an account"
+        items:
+          $ref: "#/definitions/ProductCharacteristicType"
+      productPrice:
+        type: "array"
+        description: "List of price models applied to the instantiated product"
+        items:
+          $ref: "#/definitions/ComponentProdPriceType"
+      relatedParty:
+        type: "array"
+        description: "List of individuals (e.g.: user, ?) associated to a product\
+          \ instance"
+        items:
+          $ref: "#/definitions/RelatedPartyRefType"
+      productRelationship:
+        type: "array"
+        description: "Used to define subproducts composing a bundled product or products\
+          \ already owned by the customer but with a relationship with the one included\
+          \ in the order"
+        items:
+          $ref: "#/definitions/RelatedProductType"
+      additionalData:
+        type: "array"
+        description: "Any further information needed by the server to fill the product\
+          \ ref definition (implementation and application specific) in the form of\
+          \ name-value pairs. It is recommended not to use this parameter and request\
+          \ new information elements to be added in the structure definition. Next\
+          \ releases of the T-Open API will not include support for this additionalData\
+          \ parameter because it has been detected that the extensibility function\
+          \ is not helping the stability of the standard definition of APIs"
+        items:
+          $ref: "#/definitions/KeyValueType"
+  ComponentProdPriceType:
+    required:
+    - "price"
+    - "priceType"
+    properties:
+      id:
+        type: "string"
+        description: "A unique identifier for the pricing model"
+      name:
+        type: "string"
+        description: "A human readable pricing model name"
+      description:
+        type: "string"
+        description: "A human readable pricing short description"
+      isMandatory:
+        type: "boolean"
+        description: "Indicates if the pricing model must be always included as part\
+          \ of the offering"
+      priceType:
+        type: "string"
+        description: "Identification for the type of individual pricing component"
+        enum:
+        - "recurring"
+        - "usage"
+        - "one time"
+      recurringChargePeriod:
+        type: "string"
+        description: "Identification for the recurring charging periodicity in the\
+          \ case of recurring pricing models (e.g.: ?monthly?, ?yearly?,?)"
+        enum:
+        - "daily"
+        - "weekly"
+        - "monthly"
+        - "yearly"
+      unitOfMeasure:
+        description: "Indication of the criteria to be used for the charging (e.g.:\
+          \ ?per minute?, ?per second?, ?per GB?, ?per 50GB?, ?per license?, ?per\
+          \ subscription to offering??)"
+        $ref: "#/definitions/QuantityType"
+      price:
+        description: "Base value applied to the price model offering (without taxes).\
+          \ This could refer to a charge, a discount or an allowance"
+        $ref: "#/definitions/MoneyType"
+      taxIncluded:
+        type: "boolean"
+        description: "Indication if the price is with taxes (true) or without (false)"
+      taxRate:
+        type: "number"
+        format: "decimal"
+        description: "Taxes (in percentage) applied to the individual pricing component"
+      taxType:
+        type: "string"
+        description: "Indication on the type of tax applied (e.g. ?VAT?, ?IVA?, ?)"
+      prodPriceAlteration:
+        type: "array"
+        description: "An amount, usually of money, that modifies a price charged for\
+          \ a Product"
+        items:
+          $ref: "#/definitions/ProdPriceAlterationType"
+      additionalData:
+        type: "array"
+        description: "Any additional metadata that the application may supply (implementation\
+          \ and application specific). The metadata are in the form of name-value\
+          \ pairs. It is recommended not to use this parameter and request new information\
+          \ elements to be added in the structure definition. Next releases of the\
+          \ T-Open API will not include support for this additionalData parameter\
+          \ because it has been detected that the extensibility function is not helping\
+          \ the stability of the standard definition of APIs"
+        items:
+          $ref: "#/definitions/KeyValueType"
+  ProdPriceAlterationType:
+    required:
+    - "priceType"
+    properties:
+      name:
+        type: "string"
+        description: "A human readable charging discount model name"
+      description:
+        type: "string"
+        description: "A human readable discount short description"
+      validFor:
+        description: "The validity for the discount model If not included, the current\
+          \ date is used as starting date and no ending date is defined"
+        $ref: "#/definitions/TimePeriodType"
+      priceCondition:
+        type: "string"
+        description: "Text describing the condition that triggers the alteration to\
+          \ be applied"
+      priority:
+        type: "string"
+        description: "Priority level for applying this alteration among all the defined\
+          \ alterations on the order item price"
+      priceType:
+        type: "string"
+        description: "Identification for the type of individual alteration type (recurring\
+          \ discount, one time discount, recurring allowance, one time allowance)"
+      recurringChargePeriod:
+        type: "string"
+        description: "Identification for the recurring periodicity in the case of\
+          \ recurring alteration models (e.g.: ?monthly?, ?yearly?,?)"
+        enum:
+        - "daily"
+        - "weekly"
+        - "monthly"
+        - "yearly"
+      applicationDuration:
+        type: "integer"
+        description: "Duration defined as a number of instances of the recurring period\
+          \ to apply the alteration (e.g.: 2 months for the recurring discount)"
+      discountType:
+        type: "string"
+        description: "Identification for the type of discount to be applied"
+        enum:
+        - "amount"
+        - "percentage"
+      unitOfMeasure:
+        description: "Unit of measure to apply the alteration (e.g.: ?per 1 minute?,\
+          \ ?per 1 second?, ?per 1 GB?, ?per 50 GB?, ?per 1 license?, ?subscription?,?)"
+        $ref: "#/definitions/QuantityType"
+      price:
+        description: "Value of the alteration for the case of discount. This will\
+          \ refer to a monetary value or a percentage"
+        $ref: "#/definitions/MoneyType"
+      additionalData:
+        type: "array"
+        description: "Any additional metadata that the application may supply (implementation\
+          \ and application specific). It is recommended not to use this parameter\
+          \ and request new information elements to be added in the structure definition.\
+          \ Next releases of the T-Open API will not include support for this additionalData\
+          \ parameter because it has been detected that the extensibility function\
+          \ is not helping the stability of the standard definition of APIs"
+        items:
+          $ref: "#/definitions/KeyValueType"
+  CategoryTreeType:
+    required:
+    - "id"
+    properties:
+      id:
+        type: "string"
+        description: "An identifier for the category"
+      href:
+        type: "string"
+        description: "A resource URI pointing to the resource in the OB that stores\
+          \ the category detailed information"
+      name:
+        type: "string"
+        description: "A human readable category name"
+      subcategories:
+        description: "Next level of categories allocated to the component, intended\
+          \ to allow additional segmentation. A product offering may belong to more\
+          \ than one category/subcategory"
+        $ref: "#/definitions/CategoryTreeType"
+  QuantityType:
+    required:
+    - "amount"
+    - "units"
+    properties:
+      amount:
+        type: "number"
+        format: "decimal"
+        description: "Current number of units set for the quantity"
+      maximum:
+        type: "number"
+        format: "decimal"
+        description: "Maximum number of units allowed for the quantity"
+      minimum:
+        type: "number"
+        format: "decimal"
+        description: "Minimum number of units allowed for the quantity"
+      units:
+        type: "string"
+        description: "Definition of the units used for the quantity (number of licenses,\
+          \ minutes, Megabytes, ?). Implementation specific"
+  MoneyType:
+    required:
+    - "amount"
+    - "units"
+    properties:
+      amount:
+        type: "number"
+        format: "decimal"
+        description: "Current value set for the money"
+      units:
+        type: "string"
+        description: "Definition of the currency used. It is implementation specific\
+          \ to define how currencies are defined, it could be defined using ISO 4217"
+  TimePeriodType:
+    required:
+    - "startDateTime"
+    properties:
+      startDateTime:
+        type: "string"
+        format: "date-time"
+        description: "An instant of time, starting of the TimePeriod"
+      endDateTime:
+        type: "string"
+        format: "date-time"
+        description: "An instant of time, ending of the TimePeriod. If not included,\
+          \ then the period has no ending date"
+  KeyValueType:
+    required:
+    - "key"
+    - "value"
+    properties:
+      key:
+        type: "string"
+        description: "Identifier of the specific parameter (implementation and application\
+          \ specific)"
+      value:
+        type: "string"
+        description: "Value allocated to the specific parameter identified by the\
+          \ key name"
+  ApiTransactionType:
+    required:
+    - "transactionId"
+    - "transactionStatus"
+    properties:
+      transactionId:
+        type: "string"
+        description: "The transactionId that was returned by the server (in the asynchronous\
+          \ scenario). Client will correlate the notification with the original request\
+          \ with the transactionId"
+      transactionStatus:
+        description: "The result of the transaction"
+        $ref: "#/definitions/ApiTransactionStatusType"
+      resourceUri:
+        type: "string"
+        description: "A resource URI pointing to the resource that is created, updated\
+          \ or deleted by the original request"
+  ApiTransactionStatusType:
+    required:
+    - "transactionStatus"
+    properties:
+      transactionStatus:
+        type: "string"
+        description: "Status of the transaction"
+        enum:
+        - "received"
+        - "processing"
+        - "success"
+        - "fail"
+      error:
+        description: "If status is fail this element must be used. It has the format\
+          \ of a UNICA Exception and will contain the details of the failure"
+        $ref: "#/definitions/ExceptionType"
+  MobileQuotaCharacteristicType_voiceQuota:
+    required:
+    - "voiceAllowance"
+    properties:
+      voiceAllowance:
+        type: "integer"
+        description: "Voice quota max number of units allowed to consume (default\
+          \ seconds). -1 means unlimited"
+      unit:
+        type: "string"
+        description: "Code of the unit used to specify the given value of the quota.\
+          \ If not included is seconds (default value)"
+        enum:
+        - "seconds"
+        - "minutes"
+        default: "seconds"
+      timeBands:
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "day"
+          - "night"
+          - "morning"
+          - "evening"
+          - "weekends"
+          - "workdays"
+          - "all"
+          default: "all"
+      origins:
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "home"
+          - "roaming"
+          - "EU"
+          - "any"
+          default: "home"
+      destinations:
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "telefonica"
+          - "nontelefonica"
+          - "local"
+          - "regional"
+          - "national"
+          - "international"
+          - "mobile"
+          - "landline"
+          - "rural"
+          - "any"
+          default: "national"
+  MobileQuotaCharacteristicType_dataQuota:
+    required:
+    - "dataAllowance"
+    properties:
+      dataAllowance:
+        type: "integer"
+        format: "int64"
+        description: "Data quota max number of units allowed to consume (default bytes).\
+          \ -1 means unlimited"
+      unit:
+        type: "string"
+        description: "Code of the unit used to specify the given value of the quota.\
+          \ If not included is bytes (default value)"
+        enum:
+        - "bytes"
+        - "KB"
+        - "MB"
+        - "GB"
+        default: "bytes"
+      timeBands:
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "day"
+          - "night"
+          - "morning"
+          - "evening"
+          - "weekends"
+          - "workdays"
+          - "all"
+          default: "all"
+      origins:
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "home"
+          - "roaming"
+          - "EU"
+          - "any"
+          default: "home"
+      destinations:
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "telefonica"
+          - "nontelefonica"
+          - "local"
+          - "regional"
+          - "national"
+          - "international"
+          - "mobile"
+          - "landline"
+          - "rural"
+          - "any"
+          default: "national"
+  MobileQuotaCharacteristicType_smsQuota:
+    required:
+    - "smsAllowance"
+    properties:
+      smsAllowance:
+        type: "integer"
+        description: "Voice quota max number of sms allowed to consume. -1 means unlimited"
+      timeBands:
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "day"
+          - "night"
+          - "morning"
+          - "evening"
+          - "weekends"
+          - "workdays"
+          - "all"
+          default: "all"
+      origins:
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "home"
+          - "roaming"
+          - "EU"
+          - "any"
+          default: "home"
+      destinations:
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "telefonica"
+          - "nontelefonica"
+          - "local"
+          - "regional"
+          - "national"
+          - "international"
+          - "mobile"
+          - "landline"
+          - "rural"
+          - "any"
+          default: "national"
+x-version-control:
+  2.2.5:
+    date: "24/10/2018"
+    editor: "Global IT"
+    description: "Minor change to cope with 4P requirements to diferentiate prices\
+      \ with and without taxes"
+    changes:
+    - "Attribute taxIncluded added to ComponentProdPriceType"
+  2.2.4:
+    date: "28/09/2018"
+    editor: "Global IT"
+    description: "Minor change to cope with NOVUM requirements added by Ecuador"
+    changes:
+    - "Attribute productPrice added to ProductRefInfoType"
+  2.2.3:
+    date: "27/06/2018"
+    editor: "Global IT"
+    description: "Minor change to cope with NOVUM requirements added by Ecuador"
+    changes:
+    - "Attribute tags added to ProductInstanceType and ProductRefInfoType"
+  2.2.2:
+    date: "16/05/2018"
+    editor: "Global IT"
+    description: "Minor changes to cope with NOVUM requirements"
+    changes:
+    - "List of accepted values in attribute @type within ProductCharacteristicType\
+      \ updated"
+    - "Types Text, MobileQuota, InternetConnection and TvPackages added to define\
+      \ the structure of specific ProductCharacteristic"
+    - "Query parameter productType added to GET /products operation. Query param type\
+      \ left for compatibility"
+    - "Attribute id within ProductRefInfoType made optional (to allow identification\
+      \ based on publicId only)"
+    - "List of accepted values in attribute productType within ProductInstanceType\
+      \ updated"
+    - "List of accepted values in attribute recurringChargePeriod included"
+  2.2.1:
+    date: "16/03/2018"
+    editor: "Global IT"
+    description: "Added new parameters "
+    changes:
+    - "New enumerated value in producType: device."
+    - "New element: valueType in: ProductCharacteristicType, It defines the format\
+      \ structure of the value information element (string or object type)."
+  2.2.0:
+    date: "30/01/2018"
+    editor: "Global IT"
+    description: "Added new parameters for searches and fixed typos in references\
+      \ to accounts"
+    changes:
+    - "AccountRefType is now a standard reference with @referredType and billingMethod"
+    - "New query parameters to search products by termination date"
+  2.1.0:
+    date: "22/01/2018"
+    editor: "Global IT"
+    description: "Minor update to add attribute category to product structure"
+    changes:
+    - "attribute category added to structures ProductInstanceType and ProductInstanceRequestType"
+  2.0.0:
+    date: "5/01/2018"
+    editor: "Global IT"
+    description: "Updates to cope with 4th Platform APIs and to include polymorphism\
+      \ in product characteristics"
+    changes:
+    - "structure for billingAccount attribute in ProductInstanceType and ProductInstanceRequestType\
+      \ updated"
+    - "@referredType added to EntityRefType structure"
+    - "type for relatedParty and billingAccount changed (no longer general EntityRefType)"
+    - "optional attributes (productType, publicId, startDate y terminationDate) added\
+      \ to ProductRefInfoType "
+    - "polimorphism support added to product characteristic structure. ProductCharacteristicType\
+      \ updated"
+    - "structure for some characteristics required to define some of the products\
+      \ reported by 4P added (iptv packages, data allowance, voice allowance, sms\
+      \ allowance, connection, ...)"
+  1.2.0:
+    date: "4/09/2017"
+    editor: "Global IT"
+    description: "New operations added to retrieve products for an specific individual\
+      \ (contact)"
+    changes:
+    - "resource /contacts/{contactId}/products added with GET operation to retrieve\
+      \ products in inventory associated to an specific individual(contact)"
+    - "minor update to include publicId as an optional query parameter when retrieving\
+      \ a list of products from the inventory"
+  1.1.2:
+    date: "14/07/2017"
+    editor: "Global IT"
+    description: "Minor update to add some optional attributes"
+    changes:
+    - "id and isMandatory added as optional to ComponentProdPriceType to indicate\
+      \ what price models must be always included in a specific offering"
+  1.1.1:
+    date: "7/07/2017"
+    editor: "Global IT"
+    description: "Minor change to add new optional attributes and for allignment with\
+      \ TMForum APIs conformance document"
+    changes:
+    - "parameter orderDate in ProductInstanceType made optional"
+    - "name added as optional to ProductRefInfoType"
+    - "description added as optional to ProductRefInfoType"
+    - "category added as optional to ProductRefInfoType"
+  1.1.0:
+    date: "19/06/2017"
+    editor: "Global IT"
+    description: "New operations under accounts and customers"
+    changes:
+    - "Added all the operations under accounts"
+    - "Added all the operations under customers"
+    - "Added version control to Swagger file"
+    - "Added common Telef?nica exceptions"
+  1.0.2:
+    date: "19/03/2017"
+    editor: "Global IT"
+    description: "minor update to support pagination"
+    changes:
+    - "totalResults information element removed from responses to GET collections"
+    - "X-Total-Count header added in responses to GET collections"
+  1.0.1:
+    date: "15/12/2016"
+    editor: "Global IT"
+    description: "First release (version compliant with TMForum ProductInventory API\
+      \ defined - TMF637 R16.5)"
+    changes: []
+x-telefonica-exceptions:
+  syntax:
+    SVC1000:
+      exception: "Missing Mandatory Parameter"
+      description: "API Request without mandatory field"
+      text: "\"Missing mandatory parameter: %1\" %1 - Element/Attribute name"
+      code: "400 BAD REQUEST"
+      type: "common"
+    SVC1001:
+      exception: "Invalid Parameter"
+      description: "API Request with an element not conforming to Swagger definitions\
+        \ or to a list of allowed Query Parameters. "
+      text: "\"Invalid parameter: %1\" %1 - Element/Attribute name"
+      code: "400 BAD REQUEST"
+      type: "common"
+    SVC0003:
+      exception: "Invalid Input Value with a list of valid values"
+      description: "API Request with an element or attribute value not conforming\
+        \ to Swagger definitions or to a list of allowed Query Parameter values, because\
+        \ the element or attribute value belongs to an enumerated list of possible\
+        \ values."
+      text: "\"Invalid parameter value: %1. Possible values are: %2 \" %1- Element/Attribute\
+        \ name %2 ? List of valid values "
+      code: "400 BAD REQUEST"
+      type: "common"
+    SVC0004:
+      exception: "Invalid Request URI"
+      description: "Requested API port or resource does not exist"
+      text: ""
+      code: "404 NOT FOUND"
+      type: "common"
+    SVC1003:
+      exception: "Invalid Requested Operation"
+      description: "Requested Operation does not exist"
+      text: "Requested HTTP Method Operation does not exist"
+      code: "400 BAD REQUEST"
+      type: "common"
+    SVC1023:
+      exception: "Content not well formed"
+      description: "The body of a REST request is not correctly formed, i.e.: the\
+        \ JSON body is not well formed"
+      text: "\"Parser Error: JSON content not well formed\""
+      code: "400 BAD REQUEST"
+      type: "common"
+    SVC1024:
+      exception: "Repeated query parameter"
+      description: "API Request with a repeated query parameter"
+      text: "\"Repeated query parameter: %1\" %1 - name of the repeated query parameter"
+      code: "400 BAD REQUEST"
+      type: "common"
+  service:
+    SVC10453:
+      exception: "Unknown status in request"
+      description: "Indicated value for status in query parameter is not known for\
+        \ the application"
+      text: "\"Status value set invalid %1. Possible values are: %2\" %1 - status\
+        \ in query parameter %2 ? List of valid values"
+      code: "400 BAD REQUEST"
+      type: "specific"
+    SVC10454:
+      exception: "Invalid date definition in request"
+      description: "Indicated value for endOrderDate and startOrderDate or endCompletionDate\
+        \ and startCompletionDate or other start/end date pairs is not valid (start\
+        \ must be prior to end)"
+      text: "\"Indicated combination for endDate and startDate is not valid\""
+      code: "400 BAD REQUEST"
+      type: "specific"
+    SVC0001:
+      exception: "Generic Client Error"
+      description: "UNICA API Generic wildcard fault response"
+      text: "\"Generic Client Error: %1\" %1 - additional info"
+      code: "400 BAD REQUEST"
+      type: "common"
+    SVC1004:
+      exception: "Deprecated API version"
+      description: "UNICA API error response for requests over a deprecated versi?n\
+        \ of the API."
+      text: "\"Requested versi?n of API is deprecated. Use %1\" %1 ? Supported versions\
+        \ of API"
+      code: "400 BAD REQUEST"
+      type: "common"
+    SVC0005:
+      exception: "Duplicated Correlator"
+      description: "Correlator specified in a request message is invalid because it\
+        \ already exists."
+      text: "\"Correlator %1 specified in field %2 is a duplicate\" %1 - Correlator\
+        \ %2 - Field"
+      code: "409 CONFLICT"
+      type: "common"
+    SVC1006:
+      exception: "Non Existent Resource ID"
+      description: "Reference to a resource identifier which does not exist in the\
+        \ collection/repository referred (e.g.: invalid Id)"
+      text: "\"Resource %1 does not exist\" %1 Resource Identifier"
+      code: "404 NOT FOUND"
+      type: "common"
+    SVC1011:
+      exception: "Invalid parameter length"
+      description: "Request is indicating a parameter which overcomes length limit\
+        \ established by the service"
+      text: "\"Invalid %1 length. Length should be less than %2 characters\" %1 -\
+        \ Parameter %2 - Parameter Maximum"
+      code: "400 BAD REQUEST"
+      type: "common"
+    SVC1013:
+      exception: "Non Allowed Operation"
+      description: "Operation syntax is right, but it does not fulfil the conditions\
+        \ (permissions,...) of the scenario or service"
+      text: "\"%1 Operation is not allowed: %2\" %1 ? Operation %2 - Details"
+      code: "403 FORBIDDEN"
+      type: "common"
+    SVC1020:
+      exception: "Expected parameter missing"
+      description: "UNICA API error response for requests with the absence of some\
+        \ expected parameter. I.e.: a parameter that is needed in certain use case,\
+        \ even when the parameter is optional in Swagger"
+      text: "\"Needed parameter was not found. %1\" %1 ? element/attribute name"
+      code: "400 BAD REQUEST"
+      type: "common"
+    SVC1021:
+      exception: "Wrong or unsupported parameter value"
+      description: "API Request with an element or attribute value in the body which\
+        \ is not valid in the body (not supported by the service logic, out of range,\
+        \ etc.). The value is valid according to Swagger but service logic does not\
+        \ support/allow it."
+      text: "\"Invalid parameter value: %1. Supported values are %2\" %1 - Element/Attribute\
+        \ name %2 - Supported values (inclusion of this information is optional)"
+      code: "400 BAD REQUEST"
+      type: "common"
+  server:
+    SVR1000:
+      exception: "Generic Server Fault"
+      description: "There was a problem in the Service Providers network that prevented\
+        \ to carry out the request"
+      text: "\"Generic Server Error: %1\" %1 - Details"
+      code: "500 INTERNAL SERVER ERROR"
+      type: "common"
+    SVR1003:
+      exception: "Not Implemented Operation"
+      description: "There was a problem in the Service Providers network that prevented\
+        \ to carry out the request"
+      text: "\"Requested Operation is not implemented: %1\" %1 ? HTTP method"
+      code: "501 NOT IMPLEMENTED"
+      type: "common"
+    SVR1006:
+      exception: "Service Unavailable"
+      description: "There was a problem in Server side, unable to handle the request\
+        \ due to a temporary overloading or maintenance of the server"
+      text: "\"Service temporarily unavailable: system overloaded\""
+      code: "503 SERVICE UNAVAILABLE"
+      type: "common"
+    SVR1008:
+      exception: "Timeout processing request"
+      description: "There was a timeout in the server side while processing the request."
+      text: "\"Timeout processing request[:%s]\" [:%s] - is optional %s ? a string\
+        \ with more details about the timeout cause"
+      code: "503 SERVICE UNAVAILABLE"
+      type: "common"
+x-ibm-configuration:
+  enforced: true
+  testable: true
+  phase: "realized"
+  cors:
+    enabled: true
+  assembly:
+    execute:
+    - invoke:
+        title: "invoke"
+        timeout: 10
+        verb: "POST"
+        cache-response: "protocol"
+        cache-ttl: 900
+        stop-on-error:
+        - null
+        - "ConnectionError"
+        version: "1.0.0"
+        target-url: "$(backendURL)/ri/productConfiguration/v2/productConfiguration"
+    - activity-log:
+        title: "activity-log"
+        content: "activity"
+        error-content: "payload"
+        version: "1.0.0"
+    catch:
+    - errors:
+      - "ConnectionError"
+      execute:
+      - gatewayscript:
+          title: "gatewayscript"
+          version: "1.0.0"
+          source: "var statusCode = apim.getvariable('message.status.code');\n\nvar\
+            \ statreason = apim.getvariable('message.status.reason');\n\n\napim.setvariable('message.status.code',\
+            \ '503');\n\napim.setvariable('message.status.reason', 'SERVICE UNAVAILABLE');\n\
+            \napim.setvariable('message.headers.content-type', 'application/json');\n\
+            \n apim.setvariable('message.body', {\n       \"exceptionId\" : \"SVR1008\"\
+            ,\n       \"exceptionText\": \" Timeout processing request. \",\n    \
+            \   \"moreInfo\" : \"There was a timeout in the server side while processing\
+            \ the request. \",\n       \"userMessage\" : \"Timeout processing request\
+            \ \"\n});\n\n       "
+  properties:
+    backendURL:
+      value: "http://172.28.77.56:3003"
+      description: ""
+      encoded: false
+  catalogs:
+    BSSd:
+      properties:
+        backendURL: "http://172.28.77.56:3003"
+    BSS:
+      properties:
+        backendURL: "http://172.28.77.56:3003"
+securityDefinitions:
+  oauth-1:
+    type: "oauth2"
+    description: ""
+    flow: "implicit"
+    scopes:
+      scope1: ""
+    authorizationUrl: ""
+    x-scopeValidate:
+      tls-profile: "gtinocoh"
+  client-id-1:
+    type: "apiKey"
+    description: ""
+    in: "header"
+    name: "X-IBM-Client-Id"
+security:
+- client-id-1: []
